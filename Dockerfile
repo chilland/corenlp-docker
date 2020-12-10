@@ -1,14 +1,23 @@
-FROM java:8
+FROM maven:alpine
 
-MAINTAINER Casey Hilland <casey dot hilland at gmail dot com>
+RUN apk add --update --no-cache \
+        unzip wget
 
-RUN wget http://nlp.stanford.edu/software/stanford-corenlp-full-2015-12-09.zip
-RUN unzip stanford-corenlp-full-2015-12-09.zip && rm stanford-corenlp-full-2015-12-09.zip 
+ARG CORENLP_VERSION="4.2.0"
 
-WORKDIR stanford-corenlp-full-2015-12-09
+RUN wget http://nlp.stanford.edu/software/stanford-corenlp-${CORENLP_VERSION}.zip
+RUN unzip stanford-corenlp-${CORENLP_VERSION}.zip && \
+        rm stanford-corenlp-${CORENLP_VERSION}.zip 
+
+WORKDIR stanford-corenlp-${CORENLP_VERSION}
+
+RUN wget https://nlp.stanford.edu/software/stanford-srparser-2014-10-23-models.jar
+RUN mvn install:install-file -Dfile=stanford-srparser-2014-10-23-models.jar \
+        -DgroupId=edu.stanford.nlp -DartifactId=stanford-srparser \
+        -Dversion=3.5.2 -Dpackaging=jar
 
 RUN export CLASSPATH="`find . -name '*.jar'`"
 
 EXPOSE 9000
 
-CMD java -cp "*" -mx4g edu.stanford.nlp.pipeline.StanfordCoreNLPServer
+CMD java -cp "*" -mx4g edu.stanford.nlp.pipeline.StanfordCoreNLPServer -parse.model edu/stanford/nlp/models/srparser/englishSR.ser.gz
