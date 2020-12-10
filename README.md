@@ -1,5 +1,6 @@
 # corenlp-docker
-![pipeline status](https://github.com/chilland/corenlp-docker/workflows/Publish%20Docker%20image/badge.svg)
+![pipeline status](https://github.com/chilland/corenlp-docker/workflows/Publish%20Docker%20image/badge.svg)  
+
 Dockerfile for Stanford CoreNLP Server
 ---------
 
